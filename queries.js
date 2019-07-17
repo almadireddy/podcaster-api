@@ -37,6 +37,16 @@ async function listPodcasts(opts) {
 }
 
 async function getPodcastWithId(id) {
+  const r = await _getPodcastWithId(id);
+  let podcast = r.rows[0];
+
+  const r2 = await getVoicesInPodcast(id);
+  podcast.voices = r2.rows;
+
+  return podcast;
+}
+
+async function _getPodcastWithId(id) {
   const query = `select * from podcasts where id=$1`;
 
   const x = await db.query(query, [id]);
@@ -123,6 +133,15 @@ async function createHost(host) {
 }
 
 async function getHostWithId(id) {
+  const r = await _getHostWithId(id);
+  let host = r.rows[0];
+  let r2 = await queries.getChannelsOfHost(id);
+  host.channels = r2.rows;
+  
+  return host;
+}
+
+async function _getHostWithId(id) {
   const query = `select * from hosts where id=$1;`;
 
   const x = await db.query(query, [id]);
@@ -185,6 +204,15 @@ async function createVoice(voice) {
 }
 
 async function getVoiceWithId(id) {
+  const r = await _getVoiceWithId(id);
+  let voice = r.rows[0];
+  let r2 = await getPodcastsOfVoice(id);
+  voice.podcasts = r2.rows;
+
+  return voice;
+}
+
+async function _getVoiceWithId(id) { 
   const query = `select * from voices where id=$1;`;
 
   const x = await db.query(query, [id]);

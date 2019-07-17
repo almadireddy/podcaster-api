@@ -9,11 +9,8 @@ routes.get('/voices', async (req, res) => {
 routes.get("/voice/:id", async (req, res) => {
   const {id} = req.params;
   const r = await queries.getVoiceWithId(id);
-  let voice = r.rows[0];
-  let r2 = await queries.getPodcastsOfVoice(id);
-  voice.podcasts = r2.rows;
 
-  res.status(200).send(voice)
+  res.status(200).send(r)
 });
 
 routes.post("/voices", async (req, res) => {

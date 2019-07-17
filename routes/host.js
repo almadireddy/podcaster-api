@@ -7,12 +7,9 @@ routes.get('/hosts', async (req, res) => {
 });
 
 routes.get("/host/:id", async (req, res) => {
-const {id} = req.params;
-  const r = await queries.getHostWithId(id);
-  let host = r.rows[0];
-  let r2 = await queries.getChannelsOfHost(id);
-  host.channels = r2.rows;
-
+  const {id} = req.params;
+  const host = await queries.getHostWithId(id);
+  
   res.status(200).send(host)
 });
 

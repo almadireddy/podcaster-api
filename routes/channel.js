@@ -1,6 +1,18 @@
 const routes = require('express').Router();
 const queries = require('../queries');
 
+routes.get("/channels", async (req, res) => {
+  const r = await queries.listChannels({limit: 100});
+  res.status(200).send(r.rows);
+});
+
+routes.get("/channel/:id", async (req, res) => {
+  const {id} = req.params;
+  const r = await queries.getChannelWithId(id)
+
+  res.status(200).send(r)
+});
+
 routes.post("/channels", async (req, res) => {
   let {name, start_year, channel_art, language, description} = req.body;
   let channel = {
@@ -14,11 +26,6 @@ routes.post("/channels", async (req, res) => {
   id = r.rows[0].id
   const ch = await queries.getChannelWithId(id)
   res.status(200).send(ch.rows[0])
-});
-
-routes.get("/channels", async (req, res) => {
-  const r = await queries.listChannels({limit: 100});
-  res.status(200).send(r.rows);
 });
 
 routes.put("/channel/:id/hosts", async (req, res) => {
@@ -40,13 +47,6 @@ routes.put("/channel/:id/hosts", async (req, res) => {
   const updatedChannel = await queries.getChannelWithId(id)
 
   res.status(200).send(updatedChannel)
-});
-
-routes.get("/channel/:id", async (req, res) => {
-  const {id} = req.params;
-  const r = await queries.getChannelWithId(id)
-
-  res.status(200).send(r)
 });
 
 module.exports = routes;
