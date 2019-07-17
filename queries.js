@@ -230,7 +230,7 @@ async function assignVoiceToPodcast(voice_id, podcast_id) {
 async function getVoicesInPodcast(podcast_id) {
   const query = `SELECT v.* FROM voices v
   inner join podcast_voices pv on v.id=pv.voice_id 
-  inner join podcasts p on pv.podcast_id=v.id
+  inner join podcasts p on pv.podcast_id=p.id
   where p.id=$1`;
 
   const x = await db.query(query, [podcast_id])
