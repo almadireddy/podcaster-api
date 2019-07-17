@@ -152,7 +152,14 @@ async function assignHostToChannel(host_id, channel_id, role) {
   const query = `insert into channel_hosts (channel_id, host_id, channel_role)
     values ( $1, $2, $3 )`;
   
-  const x = await db.query(query, [channel_id, host_id, role])
+  let x;
+  try {
+    x = await db.query(query, [channel_id, host_id, role])
+  } catch (e) {
+    console.log(e)
+    return false;
+  }
+  
   return x;
 }
 
@@ -223,7 +230,13 @@ async function assignVoiceToPodcast(voice_id, podcast_id) {
   const query = `insert into podcast_voices (voice_id, podcast_id)
     values ( $1, $2 )`;
   
-  const x = await db.query(query, [voice_id, podcast_id])
+  let x;
+  try {
+    x = await db.query(query, [voice_id, podcast_id])
+  } catch (e) {
+    console.log(e)
+    return false;
+  }
   return x;
 }
 
