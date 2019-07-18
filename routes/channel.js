@@ -1,5 +1,9 @@
 const routes = require('express').Router();
 const queries = require('../queries');
+const bodyParser = require('body-parser');
+const images = require('../images')
+
+let jsonParser = bodyParser.json()
 
 routes.get("/channels", async (req, res) => {
   const r = await queries.listChannels({limit: 100});
@@ -13,7 +17,8 @@ routes.get("/channel/:id", async (req, res) => {
   res.status(200).send(r)
 });
 
-routes.post("/channels", async (req, res) => {
+routes.post("/channels", jsonParser, async (req, res) => {
+  console.log(req.body)
   let {name, start_year, channel_art, language, description} = req.body;
   let channel = {
     name: name,
@@ -22,11 +27,42 @@ routes.post("/channels", async (req, res) => {
     language: language,
     description: description
   }
-  const r = await queries.createChannel(channel);
-  id = r.rows[0].id
-  const ch = await queries.getChannelWithId(id)
-  res.status(200).send(ch.rows[0])
+  let r;
+  let id;
+  try {
+    r = await queries.createChannel(channel);
+    res.status(200).send(r.rows[0])
+  } catch (e) {
+    console.log(e)
+    res.status(500).send(e)
+  } 
 });
+
+routes.post("/channel/:id/art", 
+  images.multer.single("image"), 
+  images.sendUploadToGCS,
+  async (req, res) => {
+    let {id} = req.params
+    let imageUrl;
+
+    if (req.file && req.file.cloudStoragePublicUrl) {
+      imageUrl = req.file.cloudStoragePublicUrl;
+      console.log(imageUrl)
+    } else {
+      console.log(req.file)
+      res.status(500).send("there was a problem")
+      return;
+    }
+
+    try {
+      r = await queries.changeChannelImage(id, imageUrl);
+      res.status(200).send(r.rows[0])
+    } catch (e) {
+      console.log(e)
+      res.status(400).send(e)
+    }
+  }
+)
 
 routes.put("/channel/:id/hosts", async (req, res) => {
   // send in array of host objects
@@ -48,5 +84,12 @@ routes.put("/channel/:id/hosts", async (req, res) => {
 
   res.status(200).send(updatedChannel)
 });
+
+routes.patch("/channel/:id", jsonParser, async (req, res) => {
+  let {id} = req.params
+
+  let r = await queries.updateChannel(id, req.body)
+  res.status(200).send(r.rows[0])
+})
 
 module.exports = routes;

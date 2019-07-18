@@ -1,5 +1,6 @@
 const routes = require('express').Router();
 const queries = require('../queries');
+const audio = require("../audio");
 
 routes.get("/podcasts", async (req, res) => {
   let r;
@@ -34,6 +35,33 @@ routes.post("/podcasts", async (req, res) => {
   const r2 = await queries.getPodcastWithId(id, {limit: 100})
   res.status(200).send(r2.rows[0])
 });
+
+routes.post("/podcast/:id/audio", 
+  audio.multer.single("audio"), 
+  audio.sendUploadToGCS,
+  async (req, res) => {
+    let {id} = req.params
+    let audioUrl;
+
+    if (req.file && req.file.cloudStoragePublicUrl) {
+      audioUrl = req.file.cloudStoragePublicUrl;
+      console.log(audioUrl)
+    } else {
+      console.log(req.file)
+      res.status(500).send("there was a problem")
+      return;
+    }
+
+    try {
+      r = await queries.changePodcastAudio(id, audioUrl);
+      res.status(200).send(r.rows[0])
+    } catch (e) {
+      console.log(e)
+      res.status(400).send(e)
+    }
+  }
+)
+
 
 routes.put("/podcast/:id/voices", async (req, res) => {
   let {voices} = req.body;

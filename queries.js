@@ -83,7 +83,7 @@ async function createChannel(channel) {
     (name, start_year, language, description, channel_art)
     values (
       $1, $2, $3, $4, $5
-    ) returning id;`
+    ) returning *;`
   
   const x = await db.query(query, [name, start_year, language, description, channel_art])
   return x;
@@ -102,6 +102,20 @@ async function _getChannelWithId(id) {
   const query = `select * from channels where id=$1;`;
 
   const x = await db.query(query, [id]);
+  return x;
+}
+
+async function changeChannelImage(channelId, newImageUrl) {
+  const query = "update channels set channel_art = $2 where channels.id = $1 returning *"
+  const x = await db.query(query, [channelId, newImageUrl])
+  console.log(query, channelId, newImageUrl)
+  return x;
+}
+
+async function changePodcastAudio(podcastId, newAudioUrl) {
+  const query = "update podcasts set url = $2 where podcasts.id = $1 returning *"
+  const x = await db.query(query, [podcastId, newAudioUrl])
+  console.log(query, podcastId, newAudioUrl)
   return x;
 }
 
@@ -145,6 +159,26 @@ async function _getHostWithId(id) {
   const query = `select * from hosts where id=$1;`;
 
   const x = await db.query(query, [id]);
+  return x;
+}
+
+async function updateChannel(id, values) {
+  let {name, description, language, start_year} = values
+  let query = `update channels set 
+  name = coalesce($1, name),
+  description = coalesce($2, description),
+  language = coalesce($3, language),
+  start_year = coalesce($4, start_year)
+  where id = $5 returning *`
+
+  let x = await db.query(query, [
+    name,
+    description, 
+    language,
+    start_year,
+    id
+  ]);
+  console.log(x.rows[0])
   return x;
 }
 
@@ -268,16 +302,19 @@ module.exports = {
   listChannels,
   createChannel,
   getChannelWithId,
+  updateChannel,
   listHosts,
   createHost,
   getHostWithId,
   assignHostToChannel,
   getHostsOfChannel,
   getChannelsOfHost,
+  changeChannelImage,
   listVoices,
   createVoice,
   getVoiceWithId,
   assignVoiceToPodcast,
   getVoicesInPodcast,
   getPodcastsOfVoice,
+  changePodcastAudio
 }

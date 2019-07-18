@@ -1,6 +1,10 @@
 const routes = require('express').Router();
 const queries = require('../queries');
 
+const bodyParser = require('body-parser');
+
+routes.use(bodyParser.json())
+
 routes.get('/voices', async (req, res) => {
   const r = await queries.listVoices({limit: 100})
   res.status(200).send(r.rows)
