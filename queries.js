@@ -94,7 +94,9 @@ async function getChannelWithId(id) {
   let channel = r.rows[0];
   const r2 = await getHostsOfChannel(id)
   channel.hosts = r2.rows;
-
+  const r3 = await getPodcastsWithChannelId(id)
+  channel.podcasts = r3.rows;
+  
   return channel
 }
 
