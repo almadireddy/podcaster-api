@@ -1,6 +1,6 @@
 const routes = require('express').Router();
 const queries = require('../queries');
-const audio = require("../audio");
+const images = require("../images")
 
 routes.get("/episodes", async (req, res) => {
   let r;
@@ -37,8 +37,8 @@ routes.post("/episodes", async (req, res) => {
 });
 
 routes.post("/episode/:id/audio", 
-  audio.multer.single("audio"), 
-  audio.sendUploadToGCS,
+  images.audioMulter.single("audio"), 
+  images.sendUploadToGCS,
   async (req, res) => {
     let {id} = req.params
     let audioUrl;
@@ -61,7 +61,6 @@ routes.post("/episode/:id/audio",
     }
   }
 )
-
 
 routes.put("/episode/:id/voices", async (req, res) => {
   let {voices} = req.body;

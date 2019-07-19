@@ -39,7 +39,7 @@ routes.post("/podcasts", jsonParser, async (req, res) => {
 });
 
 routes.post("/podcast/:id/art", 
-  images.multer.single("image"), 
+  images.imageMulter.single("image"), 
   images.sendUploadToGCS,
   async (req, res) => {
     let {id} = req.params

@@ -26,7 +26,12 @@ function sendUploadToGCS(req, res, next) {
     return next();
   }
 
-  const gcsname = "channel-art/" + Date.now() + "_" + req.file.originalname;
+  let gcsname;
+  if (req.file.mimetype === "audio/mp3") {
+    gcsname = "audio-files/" + Date.now() + "_" + req.file.originalname;
+  } else {
+    gcsname = "channel-art/" + Date.now() + "_" + req.file.originalname;
+  }
   const file = bucket.file(gcsname);
 
   const stream = file.createWriteStream({
@@ -58,16 +63,24 @@ function sendUploadToGCS(req, res, next) {
 // This makes it straightforward to upload to Cloud Storage.
 // [START multer]
 const Multer = require('multer');
-const multer = Multer({
+const imageMulter = Multer({
   storage: Multer.MemoryStorage,
   limits: {
     fileSize: 5 * 1024 * 1024 // no larger than 5mb
   }
 });
+
+const audioMulter = Multer({
+  storage: Multer.MemoryStorage,
+  limits: {
+    fileSize: 100 * 1024 * 1024
+  }
+})
 // [END multer]
 
 module.exports = {
   getPublicUrl,
   sendUploadToGCS,
-  multer
+  imageMulter,
+  audioMulter
 };
