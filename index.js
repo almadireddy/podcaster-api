@@ -1,13 +1,14 @@
 const express = require("express");
 const bodyParser = require('body-parser')
 var cors = require('cors')
-
+let logger = require('morgan')
 require('dotenv').config();
 
 const routes = require('./routes')
 const db = require("./db")
 const app = express();
 
+app.use(logger('dev'));
 app.use(cors())
 app.use(bodyParser.json())
 app.use('/api', routes);
