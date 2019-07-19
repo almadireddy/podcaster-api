@@ -1,51 +1,53 @@
 const routes = require('express').Router();
 const queries = require('../queries');
-const audio = require("../audio");
+const bodyParser = require('body-parser');
+const images = require('../images')
+
+let jsonParser = bodyParser.json()
 
 routes.get("/podcasts", async (req, res) => {
-  let r;
-  
-  if (req.query.channel_id !== undefined) {
-    r = await queries.getPodcastsWithChannelId(req.query.channel_id, {limit: 100});
-  } else {
-    r = await queries.listPodcasts({
-      limit: 100
-    })
-  }
-
-  res.status(200).send(r.rows)
+  const r = await queries.listPodcasts({limit: 100});
+  res.status(200).send(r.rows);
 });
 
 routes.get("/podcast/:id", async (req, res) => {
-  const podcast = await queries.getPodcastWithId(req.params.id);
-  res.status(200).send(podcast);
+  const {id} = req.params;
+  const r = await queries.getPodcastWithId(id)
+
+  res.status(200).send(r)
 });
 
-routes.post("/podcasts", async (req, res) => {
-  let {title, description, url, language, channel_id} = req.body;
+routes.post("/podcasts", jsonParser, async (req, res) => {
+  console.log(req.body)
+  let {name, start_year, podcast_art, language, description} = req.body;
   let podcast = {
-    title: title,
-    description: description,
-    url: url,
+    name: name,
+    start_year: start_year,
+    podcast_art: podcast_art,
     language: language,
-    channel_id: channel_id
+    description: description
   }
-  const r = await queries.createPodcast(podcast);
-  id = r.rows[0].id
-  const r2 = await queries.getPodcastWithId(id, {limit: 100})
-  res.status(200).send(r2.rows[0])
+  let r;
+  let id;
+  try {
+    r = await queries.createPodcast(podcast);
+    res.status(200).send(r.rows[0])
+  } catch (e) {
+    console.log(e)
+    res.status(500).send(e)
+  } 
 });
 
-routes.post("/podcast/:id/audio", 
-  audio.multer.single("audio"), 
-  audio.sendUploadToGCS,
+routes.post("/podcast/:id/art", 
+  images.multer.single("image"), 
+  images.sendUploadToGCS,
   async (req, res) => {
     let {id} = req.params
-    let audioUrl;
+    let imageUrl;
 
     if (req.file && req.file.cloudStoragePublicUrl) {
-      audioUrl = req.file.cloudStoragePublicUrl;
-      console.log(audioUrl)
+      imageUrl = req.file.cloudStoragePublicUrl;
+      console.log(imageUrl)
     } else {
       console.log(req.file)
       res.status(500).send("there was a problem")
@@ -53,7 +55,7 @@ routes.post("/podcast/:id/audio",
     }
 
     try {
-      r = await queries.changePodcastAudio(id, audioUrl);
+      r = await queries.changePodcastImage(id, imageUrl);
       res.status(200).send(r.rows[0])
     } catch (e) {
       console.log(e)
@@ -62,25 +64,32 @@ routes.post("/podcast/:id/audio",
   }
 )
 
-
-routes.put("/podcast/:id/voices", async (req, res) => {
-  let {voices} = req.body;
+routes.put("/podcast/:id/hosts", async (req, res) => {
+  // send in array of host objects
+  let {hosts} = req.body;
   const {id} = req.params;
 
-  for (const voice of voices) {
-    let voiceId;
-    if (!voice.id) {
-      const newVoice = await queries.createVoice(voice);
-      voiceId = newVoice.rows[0].id
+  for (const host of hosts) {
+    let hostId;
+    if (!host.id) {
+      const createHost = await queries.createHost(host)
+      hostId = createHost.rows[0].id
     } else {
-      voiceId = voice.id;
+      hostId = host.id;
     }
-
-    const r = await queries.assignVoiceToPodcast(voiceId, id)
+    const r = await queries.assignHostToPodcast(hostId, id, host.podcast_role);
   }
 
-  const updatedPodast = await queries.getPodcastWithId(id)
-  res.status(200).send(updatedPodast);
+  const updatedChannel = await queries.getPodcastWithId(id)
+
+  res.status(200).send(updatedChannel)
 });
+
+routes.patch("/podcast/:id", jsonParser, async (req, res) => {
+  let {id} = req.params
+
+  let r = await queries.updatePodcast(id, req.body)
+  res.status(200).send(r.rows[0])
+})
 
 module.exports = routes;

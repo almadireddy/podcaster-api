@@ -1,14 +1,14 @@
 const routes = require('express').Router();
-const podcasts = require('./podcast');
+const episodes = require('./episode');
 const hosts = require('./host');
-const channel = require('./channel');
+const podcast = require('./podcast');
 const voice = require('./voice');
 const bodyParser = require('body-parser');
 
 routes.use(bodyParser.json())
-routes.use('/', podcasts)
+routes.use('/', episodes)
 routes.use('/', hosts)
-routes.use('/', channel)
+routes.use('/', podcast)
 routes.use("/", voice)
 
 module.exports = routes
