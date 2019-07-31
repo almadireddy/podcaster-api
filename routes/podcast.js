@@ -64,7 +64,7 @@ routes.post("/podcast/:id/art",
   }
 )
 
-routes.put("/podcast/:id/hosts", async (req, res) => {
+routes.put("/podcast/:id/hosts", jsonParser, async (req, res) => {
   // send in array of host objects
   let {hosts} = req.body;
   const {id} = req.params;

@@ -5,19 +5,19 @@ const bodyParser = require('body-parser');
 
 routes.use(bodyParser.json())
 
-routes.get('/voices', async (req, res) => {
-  const r = await queries.listVoices({limit: 100})
+routes.get('/guests', async (req, res) => {
+  const r = await queries.listGuests({limit: 100})
   res.status(200).send(r.rows)
 });
 
-routes.get("/voice/:id", async (req, res) => {
+routes.get("/guest/:id", async (req, res) => {
   const {id} = req.params;
-  const r = await queries.getVoiceWithId(id);
+  const r = await queries.getGuestWithId(id);
 
   res.status(200).send(r)
 });
 
-routes.post("/voices", async (req, res) => {
+routes.post("/guests", async (req, res) => {
   let {name, bio, language, country, email, job_title, organization, orcid, website} = req.body;
 
   let h = {
@@ -31,15 +31,15 @@ routes.post("/voices", async (req, res) => {
     orcid: orcid,
     website: website
   }
-  const r = await queries.createVoice(h);
+  const r = await queries.createGuest(h);
   let id = r.rows[0].id
 
-  const voiceRes = await queries.getVoiceWithId(id)
+  const voiceRes = await queries.getGuestWithId(id)
   const voice = voiceRes.rows[0];
   let voiceId = voice.id;
 
   if (req.body.podcast_id) {
-    const r2 = await queries.assignVoiceToPodcast(voiceId, req.body.podcast_id)
+    const r2 = await queries.assignGuestToEpisode(voiceId, req.body.podcast_id)
   } 
   res.status(200).send(voice)
 });

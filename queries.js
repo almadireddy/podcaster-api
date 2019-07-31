@@ -232,7 +232,7 @@ async function listGuests(opts) {
     orderBy = "created_at";
   }
 
-  const query = `select * from VOICES order by $1 limit $2`;
+  const query = `select * from GUESTS order by $1 limit $2`;
 
   const x = await db.query(query, [orderBy, limit]);
   return x;
