@@ -1,5 +1,14 @@
-const {Pool} = require('pg');
-const pool = new Pool();
+var knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host : process.env.PGHOST,
+    user : process.env.PGUSER,
+    password : process.env.PGPASSWORD,
+    database : process.env.PGDATABASE
+  }
+});
+
+var bookshelf = require('bookshelf')(knex);
 
 async function initDb() {
   await pool.connect().then(() => {
