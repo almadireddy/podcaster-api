@@ -5,7 +5,8 @@
   "license": "MIT",
   "author": "Al Madireddy",
   "scripts": {
-    "start": "nodemon"
+    "start": "node index.js",
+    "dev": "nodemon"
   },
   "dependencies": {
     "@google-cloud/storage": "^3.0.3",

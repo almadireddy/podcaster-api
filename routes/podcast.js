@@ -85,6 +85,27 @@ routes.put("/podcast/:id/hosts", jsonParser, async (req, res) => {
   res.status(200).send(updatedChannel)
 });
 
+routes.put("/podcast/:id/episodes", jsonParser, async (req, res) => {
+  // send in array of host objects
+  let {episodes} = req.body;
+  const {id} = req.params;
+
+  for (const episode of episodes) {
+    let episodeId;
+    if (!episode.id) {
+      const createEpisode = await queries.createEpisode(host)
+      episodeId = createEpisode.rows[0].id
+    } else {
+      episodeId = host.id;
+    }
+    const r = await queries.assignEpisodeToPodcast(episodeId, id);
+  }
+
+  const updatedChannel = await queries.getPodcastWithId(id)
+
+  res.status(200).send(updatedChannel)
+});
+
 routes.patch("/podcast/:id", jsonParser, async (req, res) => {
   let {id} = req.params
 

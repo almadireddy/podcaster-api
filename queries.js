@@ -202,6 +202,20 @@ async function assignHostToPodcast(host_id, podcast_id, role) {
   return x;
 }
 
+async function assignEpisodeToPodcast(episode_id, podcast_id) {
+  const query = `update episodes set podcast_id = $2 where episodes.id = $1 returning *`;
+  
+  let x;
+  try {
+    x = await db.query(query, [podcast_id, episode_id])
+  } catch (e) {
+    console.log(e)
+    return false;
+  }
+  
+  return x;
+}
+
 async function getHostsOfPodcast(podcast_id) {
   const query = `SELECT h.*, ch.podcast_role FROM hosts h
   inner join podcast_hosts ch on h.id=ch.host_id 
@@ -308,6 +322,7 @@ module.exports = {
   createPodcast,
   getPodcastWithId,
   updatePodcast,
+  assignEpisodeToPodcast,
   listHosts,
   createHost,
   getHostWithId,
