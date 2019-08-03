@@ -90,15 +90,17 @@ routes.put("/podcast/:id/episodes", jsonParser, async (req, res) => {
   let {episodes} = req.body;
   const {id} = req.params;
 
-  for (const episode of episodes) {
-    let episodeId;
-    if (!episode.id) {
-      const createEpisode = await queries.createEpisode(host)
-      episodeId = createEpisode.rows[0].id
-    } else {
-      episodeId = host.id;
+  if (episodes) {
+    for (const episode of episodes) {
+      let episodeId;
+      if (!episode.id) {
+        const createEpisode = await queries.createEpisode(episode)
+        episodeId = createEpisode.rows[0].id
+      } else {
+        episodeId = episode.id;
+      }
+      const r = await queries.assignEpisodeToPodcast(Number(episodeId), Number(id));
     }
-    const r = await queries.assignEpisodeToPodcast(episodeId, id);
   }
 
   const updatedChannel = await queries.getPodcastWithId(id)

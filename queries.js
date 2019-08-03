@@ -203,7 +203,7 @@ async function assignHostToPodcast(host_id, podcast_id, role) {
 }
 
 async function assignEpisodeToPodcast(episode_id, podcast_id) {
-  const query = `update episodes set podcast_id = $2 where episodes.id = $1 returning *`;
+  const query = `update episodes set podcast_id=$1 where id=$2 returning *`;
   
   let x;
   try {
