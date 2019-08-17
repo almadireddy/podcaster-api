@@ -154,7 +154,7 @@ async function createHost(host) {
 async function getHostWithId(id) {
   const r = await _getHostWithId(id);
   let host = r.rows[0];
-  let r2 = await queries.getPodcastsOfHost(id);
+  let r2 = await getPodcastsOfHost(id);
   host.podcasts = r2.rows;
   
   return host;
