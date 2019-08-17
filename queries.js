@@ -187,6 +187,24 @@ async function updatePodcast(id, values) {
   return x;
 }
 
+async function updateEpisode(id, values) {
+  let {title, description, language} = values
+  let query = `update episodes set 
+  title = coalesce($1, title),
+  description = coalesce($2, description),
+  language = coalesce($3, language)
+  where id = $4 returning *`
+
+  let x = await db.query(query, [
+    title,
+    description, 
+    language,
+    id
+  ]);
+  console.log(x.rows[0])
+  return x;
+}
+
 async function assignHostToPodcast(host_id, podcast_id, role) {
   const query = `insert into podcast_hosts (podcast_id, host_id, podcast_role)
     values ( $1, $2, $3 )`;
@@ -336,5 +354,6 @@ module.exports = {
   assignGuestToEpisode,
   getGuestsInEpisode,
   getEpisodesOfGuest,
-  changeEpisodeAudio
+  changeEpisodeAudio,
+  updateEpisode
 }

@@ -82,4 +82,11 @@ routes.put("/episode/:id/voices", async (req, res) => {
   res.status(200).send(updatedPodast);
 });
 
+routes.patch("/episode/:id", async (req, res) => {
+  let {id} = req.params
+
+  let r = await queries.updateEpisode(id, req.body)
+  res.status(200).send(r.rows[0])
+})
+
 module.exports = routes;
