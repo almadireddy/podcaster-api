@@ -4,6 +4,8 @@ var cors = require('cors')
 let logger = require('morgan')
 require('dotenv').config();
 
+const admin = require("./fb-admin/admin")
+
 const routes = require('./routes')
 const db = require("./db")
 const app = express();

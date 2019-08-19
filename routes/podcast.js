@@ -2,6 +2,7 @@ const routes = require('express').Router();
 const queries = require('../queries');
 const bodyParser = require('body-parser');
 const images = require('../images')
+const verifyToken = require("../fb-admin/middleware")
 
 let jsonParser = bodyParser.json()
 
@@ -10,7 +11,7 @@ routes.get("/podcasts", async (req, res) => {
   res.status(200).send(r.rows);
 });
 
-routes.get("/podcast/:id", async (req, res) => {
+routes.get("/podcast/:id", verifyToken, async (req, res) => {
   const {id} = req.params;
   const r = await queries.getPodcastWithId(id)
 
