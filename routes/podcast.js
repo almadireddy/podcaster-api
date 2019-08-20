@@ -11,7 +11,7 @@ routes.get("/podcasts", async (req, res) => {
   res.status(200).send(r.rows);
 });
 
-routes.get("/podcast/:id", verifyToken, async (req, res) => {
+routes.get("/podcast/:id", async (req, res) => {
   const {id} = req.params;
   const r = await queries.getPodcastWithId(id)
 

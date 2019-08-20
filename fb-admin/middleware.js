@@ -11,7 +11,7 @@ async function verifyToken(req, res, next) {
       return next();
     } else {
       return res.status(401).send("Unauthorized")
-    } 
+    }
   } catch (e) {
     console.error(e)
     return res.status(401).send("Unauthorized request caught!")
