@@ -16,7 +16,6 @@ async function createEpisode(episode) {
     (select id from podcasts where id=$5)
   ) returning id;`
   const params =  [title, description, url, language, podcast_id]
-  console.log(params)
   const x = await db.query(query, params);
   return x;
 }

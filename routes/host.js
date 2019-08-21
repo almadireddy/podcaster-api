@@ -31,12 +31,13 @@ routes.post("/hosts", async (req, res) => {
   let id = r.rows[0].id
 
   const hostRes = await queries.getHostWithId(id)
-  const host = hostRes.rows[0];
+  const host = hostRes;
   let hostId = host.id;
 
   if (req.body.channel_id) {
-    let channel_role = req.body.channel_role;
-    const r2 = await queries.assignHostToChannel(hostId, req.body.channel_id, channel_role)
+    for (const r of req.body.channel_id) {
+      const r2 = await queries.assignHostToPodcast(hostId, r, "")
+    }
   } 
   res.status(200).send(host)
 });
