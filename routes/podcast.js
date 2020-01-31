@@ -70,7 +70,7 @@ routes.put("/podcast/:id/hosts", jsonParser, verifyToken, async (req, res) => {
   // send in array of host objects
   let {hosts} = req.body;
   const {id} = req.params;
-
+  
   for (const host of hosts) {
     let hostId;
     if (!host.id) {
