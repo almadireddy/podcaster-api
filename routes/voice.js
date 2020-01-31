@@ -1,6 +1,6 @@
 const routes = require('express').Router();
 const queries = require('../queries');
-
+const verifyToken = require("../fb-admin/middleware")
 const bodyParser = require('body-parser');
 
 routes.use(bodyParser.json())
@@ -17,7 +17,7 @@ routes.get("/guest/:id", async (req, res) => {
   res.status(200).send(r)
 });
 
-routes.post("/guests", async (req, res) => {
+routes.post("/guests", verifyToken, async (req, res) => {
   let {name, bio, language, country, email, job_title, organization, orcid, website} = req.body;
 
   let h = {

@@ -2,7 +2,9 @@ const admin = require("firebase-admin");
 
 async function verifyToken(req, res, next) {
   const idToken = req.headers.authorization;
-
+  if (!idToken) {
+    return res.status(401).send("Unauthorized")
+  }
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
 

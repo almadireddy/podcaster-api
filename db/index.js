@@ -1,5 +1,8 @@
 const {Pool} = require('pg');
-const pool = new Pool();
+const db = require('../database.json')
+const connectionConfig = db.dev;
+
+const pool = new Pool(connectionConfig);
 
 async function initDb() {
   await pool.connect().then(() => {

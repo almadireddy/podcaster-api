@@ -18,7 +18,7 @@ routes.get("/podcast/:id", async (req, res) => {
   res.status(200).send(r)
 });
 
-routes.post("/podcasts", jsonParser, async (req, res) => {
+routes.post("/podcasts", jsonParser, verifyToken,  async (req, res) => {
   console.log(req.body)
   let {name, start_year, podcast_art, language, description} = req.body;
   let podcast = {
@@ -40,6 +40,7 @@ routes.post("/podcasts", jsonParser, async (req, res) => {
 });
 
 routes.post("/podcast/:id/art", 
+  verifyToken,
   images.imageMulter.single("image"), 
   images.sendUploadToGCS,
   async (req, res) => {
@@ -65,7 +66,7 @@ routes.post("/podcast/:id/art",
   }
 )
 
-routes.put("/podcast/:id/hosts", jsonParser, async (req, res) => {
+routes.put("/podcast/:id/hosts", jsonParser, verifyToken, async (req, res) => {
   // send in array of host objects
   let {hosts} = req.body;
   const {id} = req.params;
@@ -86,7 +87,7 @@ routes.put("/podcast/:id/hosts", jsonParser, async (req, res) => {
   res.status(200).send(updatedChannel)
 });
 
-routes.put("/podcast/:id/episodes", jsonParser, async (req, res) => {
+routes.put("/podcast/:id/episodes", jsonParser, verifyToken, async (req, res) => {
   // send in array of host objects
   let {episodes} = req.body;
   const {id} = req.params;
@@ -109,7 +110,7 @@ routes.put("/podcast/:id/episodes", jsonParser, async (req, res) => {
   res.status(200).send(updatedChannel)
 });
 
-routes.patch("/podcast/:id", jsonParser, async (req, res) => {
+routes.patch("/podcast/:id", jsonParser, verifyToken, async (req, res) => {
   let {id} = req.params
 
   let r = await queries.updatePodcast(id, req.body)

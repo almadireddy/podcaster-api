@@ -1,5 +1,9 @@
 const routes = require('express').Router();
 const queries = require('../queries');
+const verifyToken = require("../fb-admin/middleware")
+const bodyParser = require('body-parser');
+
+routes.use(bodyParser.json())
 
 routes.get('/hosts', async (req, res) => {
   const r = await queries.listHosts({limit: 100})
@@ -13,7 +17,7 @@ routes.get("/host/:id", async (req, res) => {
   res.status(200).send(host)
 });
 
-routes.post("/hosts", async (req, res) => {
+routes.post("/hosts", verifyToken, async (req, res) => {
   let {name, bio, language, country, email, job_title, organization, orcid, website} = req.body;
 
   let h = {

@@ -1,6 +1,10 @@
 const routes = require('express').Router();
 const queries = require('../queries');
 const images = require("../images")
+const verifyToken = require("../fb-admin/middleware")
+const bodyParser = require('body-parser');
+
+routes.use(bodyParser.json())
 
 routes.get("/episodes", async (req, res) => {
   let r;
@@ -21,7 +25,7 @@ routes.get("/episode/:id", async (req, res) => {
   res.status(200).send(episode);
 });
 
-routes.post("/episodes", async (req, res) => {
+routes.post("/episodes", verifyToken, async (req, res) => {
   let {title, description, url, language, podcast_id} = req.body;
   let episode = {
     title: title,
@@ -37,6 +41,7 @@ routes.post("/episodes", async (req, res) => {
 });
 
 routes.post("/episode/:id/audio", 
+  verifyToken,
   images.audioMulter.single("audio"), 
   images.sendUploadToGCS,
   async (req, res) => {
@@ -62,7 +67,7 @@ routes.post("/episode/:id/audio",
   }
 )
 
-routes.put("/episode/:id/voices", async (req, res) => {
+routes.put("/episode/:id/voices", verifyToken, async (req, res) => {
   let {voices} = req.body;
   const {id} = req.params;
 
@@ -82,7 +87,7 @@ routes.put("/episode/:id/voices", async (req, res) => {
   res.status(200).send(updatedPodast);
 });
 
-routes.patch("/episode/:id", async (req, res) => {
+routes.patch("/episode/:id", verifyToken, async (req, res) => {
   let {id} = req.params
 
   let r = await queries.updateEpisode(id, req.body)

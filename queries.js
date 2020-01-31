@@ -143,8 +143,8 @@ async function createHost(host) {
   const {name, bio, language, country, email, job_title, organization, orcid, website} = host;
   
   const query = `insert into hosts 
-    (name, bio, language, country,email, job_title, organization, orcid, website)
-    values ($1, $2, $3, $4,  $5,  $6,  $7,  $8,  $9) returning id;`
+    (name, bio, language, country, email, job_title, organization, orcid, website, contact_email)
+    values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $5) returning id;`
   
   const x = await db.query(query, [name, bio, language, country, email, job_title, organization, orcid, website]);
   return x
